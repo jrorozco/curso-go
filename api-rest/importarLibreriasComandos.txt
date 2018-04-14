@@ -1,0 +1,3 @@
+//para importa la libreria de gorilla mux que es para crear un router para las rutas rest 
+// lo importamos con el siguiente comando
+go get -u github.com/gorilla/mux
