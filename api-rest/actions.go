@@ -155,6 +155,55 @@ func MovieUpdate(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Este es el numero envioado por la url %s", movie_Id)
 }
 
+// objeto de tipo Message
+type Message struct { // objeto de tipo mensaje para devoleverlo cuado hacemos un DELETE
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+//*****SETTERS Message
+
+func (this *Message) setStatus(data string) {
+	this.Status = data
+}
+func (this *Message) setMessage(data string) {
+	this.Message = data
+}
+
+//*****SETTERS Message
+
+/**
+*en esta rutina es para obtener un documento con el id de la BD
+*
+ */
+func MovieRemove(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)    // aqui capturamos todas los parametros enviados por la url
+	movie_Id := params["id"] //en esta parte obtenemos el id con el nombre que se envio -> /pelicula/{id}
+
+	if !bson.IsObjectIdHex(movie_Id) {
+		w.WriteHeader(404)
+		return
+	}
+
+	objId := bson.ObjectIdHex(movie_Id)
+	err := collection.RemoveId(objId)
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	}
+	//results := Message{"Sussecs", "La pelicula con ID " + movie_Id + " ha sido borrada correctamente"}
+	message := new(Message) // mensajes con setters
+	message.setStatus("Sussecs")
+	message.setMessage("La pelicula con ID " + movie_Id + " ha sido borrada correctamente")
+	results := message
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(results)
+
+	fmt.Fprintf(w, "Este es el numero envioado por la url %s", movie_Id)
+}
+
 func responseMovie(w http.ResponseWriter, status int, results Movie) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
