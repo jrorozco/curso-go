@@ -52,9 +52,7 @@ func MovieList(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Println("Resultados : ", results)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(results)
+	responseMovies(w, 200, results)
 	//json.NewEncoder(w).Encode(movies)
 	//fmt.Fprintf(w, "Esta es Listado de peliculas")
 }
@@ -82,9 +80,7 @@ func MovieShow(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		return
 	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(200)
-		json.NewEncoder(w).Encode(results)
+		responseMovie(w, 200, results)
 	}
 
 	fmt.Fprintf(w, "Este es el numero envioado por la url %s", movie_Id)
@@ -114,7 +110,23 @@ func MovieAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//movies = append(movies, movieData)
-	json.NewEncoder(w).Encode(movieData)               // convertimos a json movieData con la variable w que es el response
-	w.Header().Set("Content-Type", "application/json") // le indicamos que devolevera los datos como json
-	w.WriteHeader(200)                                 // como todo ha ido bien le indicamos que el estatus es 200 de ok
+	//** verificar los metodos resposeMovie y responseMovies
+	//json.NewEncoder(w).Encode(movieData)               // convertimos a json movieData con la variable w que es el response
+	//w.Header().Set("Content-Type", "application/json") // le indicamos que devolevera los datos como json
+	//w.WriteHeader(200)                                 // como todo ha ido bien le indicamos que el estatus es 200 de ok
+
+	responseMovie(w, 200, movieData)
+
+}
+
+func responseMovie(w http.ResponseWriter, status int, results Movie) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(results)
+}
+
+func responseMovies(w http.ResponseWriter, status int, results []Movie) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(results)
 }
