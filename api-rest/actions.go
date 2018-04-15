@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 
+	"gopkg.in/mgo.v2/bson"
+
 	"gopkg.in/mgo.v2"
 
 	"github.com/gorilla/mux"
@@ -38,7 +40,10 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hola mundo desde mi servidor web con go")
 }
 
-//**
+/**
+*con esta rutina listamos el documento movies y lo cargamos en un objeto json para enviarlo a la vista
+*
+ */
 func MovieList(w http.ResponseWriter, r *http.Request) {
 	var results []Movie
 	err := collection.Find(nil).Sort("-_id").All(&results) // hacemos una consulta a la BD del documento movies y en el Find(nil) le ponemos nil para que se traiga todo con All y el & le pasamos todo a la variable results
@@ -54,13 +59,41 @@ func MovieList(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, "Esta es Listado de peliculas")
 }
 
-//***
+/**
+*en esta rutina
+*
+ */
 func MovieShow(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)    // aqui capturamos todas los parametros enviados por la url
 	movie_Id := params["id"] //en esta parte obtenemos el id con el nombre que se envio -> /pelicula/{id}
 
+	if !bson.IsObjectIdHex(movie_Id) {
+		w.WriteHeader(404)
+		return
+	}
+
+	objId := bson.ObjectIdHex(movie_Id)
+
+	results := Movie{}
+
+	err := collection.FindId(objId).One(&results)
+
+	if err != nil {
+		w.WriteHeader(404)
+		return
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(results)
+	}
+
 	fmt.Fprintf(w, "Este es el numero envioado por la url %s", movie_Id)
 }
+
+/**
+*En esta rutina agregamos un nuevo registro al documento movies de la BD curso-go
+*
+ */
 func MovieAdd(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
