@@ -1,3 +1,12 @@
 //para importa la libreria de gorilla mux que es para crear un router para las rutas rest 
 // lo importamos con el siguiente comando
 go get -u github.com/gorilla/mux
+
+//CONECTARSE A MONGO CON go
+//Tenemos que traer una libreria que se llama mgo para hacer este paso con el siguiente comando
+
+go get gopkg.in/mgo.v2
+
+// tambien para trabajar con mongo y es para los objetos binarios de mongo se llama bson ejecutamos el siguiente comando para trabajar con los documentos de mongo y los binarios
+
+go get gopkg.in/mgo.v2/bson
